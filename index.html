@@ -6,53 +6,232 @@
   <title>Chat App</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-    body, html { height: 100%; background-color: #0b141a; color: #e9edef; overflow: hidden; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-    /* Struttura principale */
-    .app-container { width: 100%; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0b141a;
+      color: #e9edef;
+    }
+
+    /* Struttura bloccata sullo schermo dello smartphone */
+    .app-container {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
     /* HEADER */
-    .header-bar { background-color: #202c33; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; flex-shrink: 0; }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .app-title { font-size: 20px; font-weight: 700; color: #00a884; }
-    .chat-user-title { font-size: 16px; font-weight: 600; }
-    .back-btn { color: #aebac1; font-size: 18px; cursor: pointer; }
-    .header-icons { display: flex; gap: 20px; color: #aebac1; font-size: 18px; }
+    .header-bar {
+      height: 60px;
+      min-height: 60px;
+      background-color: #202c33;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      flex-shrink: 0;
+      z-index: 10;
+      border-bottom: 1px solid #111b21;
+    }
 
-    /* VISTA CONTATTI */
-    .contacts-list { flex: 1; overflow-y: auto; background-color: #111b21; width: 100%; }
-    .contact { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #222d34; cursor: pointer; }
-    .avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0; }
-    .contact-info { flex: 1; overflow: hidden; }
-    .contact-top { display: flex; justify-content: space-between; margin-bottom: 3px; }
-    .contact-name { font-weight: 600; }
-    .contact-time { font-size: 12px; color: #8696a0; }
-    .contact-msg { font-size: 13px; color: #8696a0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .app-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #00a884;
+    }
+
+    .chat-user-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e9edef;
+    }
+
+    .back-btn {
+      color: #aebac1;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .header-icons {
+      display: flex;
+      gap: 20px;
+      color: #aebac1;
+      font-size: 18px;
+    }
+
+    /* LISTA CONTATTI */
+    .contacts-list {
+      flex: 1;
+      overflow-y: auto;
+      background-color: #111b21;
+    }
+
+    .contact {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border-bottom: 1px solid #222d34;
+      cursor: pointer;
+    }
+
+    .contact:active {
+      background-color: #202c33;
+    }
+
+    .avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #fff;
+      font-size: 15px;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .contact-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .contact-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+
+    .contact-name {
+      font-weight: 600;
+      color: #e9edef;
+      font-size: 16px;
+    }
+
+    .contact-time {
+      font-size: 12px;
+      color: #8696a0;
+    }
+
+    .contact-msg {
+      font-size: 13px;
+      color: #8696a0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     /* VISTA CHAT */
-    .chat-container { display: none; flex-direction: column; flex: 1; background-color: #0b141a; overflow: hidden; }
-    .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-    .msg { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; }
-    .msg.sent { background-color: #005c4b; align-self: flex-end; }
-    .msg.received { background-color: #202c33; align-self: flex-start; }
-    .msg-time { font-size: 10px; color: #8696a0; text-align: right; margin-top: 3px; }
+    .chat-container {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+      background-color: #0b141a;
+      background-image: radial-gradient(#202c33 1px, transparent 0);
+      background-size: 20px 20px;
+    }
 
-    /* BARRA INPUT (Ora forzata in fondo) */
-    .input-bar { background-color: #202c33; padding: 10px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; height: 60px; }
-    .input-bar input { flex: 1; background: #2a3942; border: none; padding: 10px 15px; border-radius: 20px; color: white; outline: none; }
-    .send-btn { color: #00a884; font-size: 20px; cursor: pointer; }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .msg {
+      max-width: 80%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+
+    .msg.sent {
+      background-color: #005c4b;
+      align-self: flex-end;
+      border-top-right-radius: 0;
+    }
+
+    .msg.received {
+      background-color: #202c33;
+      align-self: flex-start;
+      border-top-left-radius: 0;
+    }
+
+    .msg-time {
+      font-size: 10px;
+      color: #8696a0;
+      text-align: right;
+      margin-top: 3px;
+    }
+
+    /* BARRA DI SCRITTURA (FISSA IN BASSO) */
+    .input-bar {
+      height: 60px;
+      min-height: 60px;
+      background-color: #202c33;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      border-top: 1px solid #111b21;
+    }
+
+    .input-bar input {
+      flex: 1;
+      background: #2a3942;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 20px;
+      color: white;
+      outline: none;
+      font-size: 15px;
+    }
+
+    .send-btn {
+      color: #00a884;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 5px;
+    }
   </style>
 </head>
 <body>
 
 <div class="app-container">
+  <!-- Header -->
   <div class="header-bar">
     <div class="header-left">
       <i class="fa-solid fa-arrow-left back-btn" id="backBtn" style="display:none;" onclick="goHome()"></i>
       <span class="app-title" id="appTitle">Chat</span>
       <span class="chat-user-title" id="chatTitle" style="display:none;"></span>
     </div>
+
     <div class="header-icons" id="mainIcons">
       <i class="fa-solid fa-magnifying-glass"></i>
       <i class="fa-solid fa-ellipsis-vertical"></i>
@@ -64,8 +243,10 @@
     </div>
   </div>
 
+  <!-- Vista Lista Contatti -->
   <div class="contacts-list" id="contactsView"></div>
 
+  <!-- Vista Chat Singola -->
   <div class="chat-container" id="chatView">
     <div class="chat-messages" id="messagesArea"></div>
     <div class="input-bar">
@@ -78,78 +259,307 @@
 
 <script>
   let activeKey = null;
+
   const chatData = {
-    koharu: { name: "Koharu Fuyutsuki", avatar: "KF", bg: "#3b5998", time: "21:12", messages: [{text: "Ehi, ci sei?", time: "20:10", type: "received"}, {text: "Sì, dimmi pure!", time: "20:12", type: "sent"}, {text: "Sì, esatto.", time: "21:12", type: "received"}] },
-    marco: { name: "Marco", avatar: "M", bg: "#2e7d32", time: "18:30", messages: [{text: "Ci vediamo domani!", time: "18:30", type: "received"}] },
-    sofia: { name: "Sofia", avatar: "S", bg: "#8e24aa", time: "17:45", messages: [{text: "Vieni in biblioteca?", time: "15:00", type: "received"}] },
-    alessandro: { name: "Alessandro", avatar: "A", bg: "#d32f2f", time: "16:20", messages: [{text: "Stasera partita?", time: "14:00", type: "received"}] },
-    elena: { name: "Elena", avatar: "E", bg: "#f57c00", time: "15:10", messages: [{text: "Hai comprato i pennarelli?", time: "14:50", type: "received"}] },
-    luca: { name: "Luca", avatar: "L", bg: "#0097a7", time: "14:00", messages: [{text: "A che ora parte il bus?", time: "13:30", type: "received"}] },
-    giulia: { name: "Giulia", avatar: "G", bg: "#c2185b", time: "Ieri", messages: [{text: "Auguri!! 🎉", time: "09:00", type: "received"}] },
-    davide: { name: "Davide", avatar: "D", bg: "#512da8", time: "Ieri", messages: [{text: "Visto il finale?", time: "22:00", type: "received"}] },
-    chiara: { name: "Chiara", avatar: "C", bg: "#00796b", time: "05/08", messages: [{text: "Partita a scacchi?", time: "16:00", type: "received"}] },
-    matteo: { name: "Matteo", avatar: "M", bg: "#455a64", time: "03/08", messages: [{text: "Risolto il bug?", time: "11:00", type: "received"}] }
+    koharu: {
+      name: "Koharu Fuyutsuki",
+      avatar: "KF",
+      bg: "#3b5998",
+      time: "21:12",
+      messages: [
+        { text: "Ehi, ci sei?", time: "20:10", type: "received" },
+        { text: "Sì, dimmi pure!", time: "20:12", type: "sent" },
+        { text: "Volevo chiederti a che punto sei con il progetto.", time: "20:15", type: "received" },
+        { text: "Sto configurando la schermata principale.", time: "20:18", type: "sent" },
+        { text: "Ottimo! Hai sistemato anche la grafica?", time: "20:22", type: "received" },
+        { text: "Sì, sto usando lo stile scuro tipo WhatsApp.", time: "20:25", type: "sent" },
+        { text: "Perfetto, sembra molto pulito dalle immagini!", time: "20:30", type: "received" },
+        { text: "Riesci a mandarmi un'anteprima appena finisci?", time: "20:32", type: "received" },
+        { text: "Appena finisco di caricare i file su GitHub ti passo il link.", time: "20:35", type: "sent" },
+        { text: "Va benissimo, grazie mille!", time: "20:40", type: "received" },
+        { text: "Ah ascolta, per domani a che ora ci troviamo?", time: "20:42", type: "received" },
+        { text: "Facciamo per le 15:00 davanti al cancello?", time: "20:45", type: "sent" },
+        { text: "Per me va benissimo, porto la chiavetta USB con i dati.", time: "20:48", type: "received" },
+        { text: "Ottimo, ci aggiorniamo dopo allora.", time: "20:50", type: "sent" },
+        { text: "Grazie per oggi!", time: "20:55", type: "received" },
+        { text: "Di cosa parli?", time: "21:00", type: "sent" },
+        { text: "Intendevo per l'aiuto sul codice!", time: "21:05", type: "received" },
+        { text: "Ah capito! Figurati, di niente.", time: "21:10", type: "sent" },
+        { text: "Sì, esatto.", time: "21:12", type: "received" }
+      ]
+    },
+    marco: {
+      name: "Marco",
+      avatar: "M",
+      bg: "#2e7d32",
+      time: "18:30",
+      messages: [
+        { text: "Ciao! Hai visto gli appunti di oggi?", time: "17:00", type: "received" },
+        { text: "Non ancora, mi passi la foto?", time: "17:05", type: "sent" },
+        { text: "Certo, te la mando tra poco appena arrivo a casa.", time: "17:10", type: "received" },
+        { text: "Hai fatto anche gli esercizi per domani?", time: "17:15", type: "received" },
+        { text: "Sì, quelli di pagina 45 fatti tutti.", time: "17:20", type: "sent" },
+        { text: "Erano difficili?", time: "17:22", type: "received" },
+        { text: "Un po' il terzo, gli altri fattibili.", time: "17:25", type: "sent" },
+        { text: "Ok grazie, stasera ci provo con calma.", time: "17:30", type: "received" },
+        { text: "Se ti blocchi fammi un fischio che li rivediamo.", time: "17:35", type: "sent" },
+        { text: "Sei poi andato in palestra oggi?", time: "17:40", type: "received" },
+        { text: "Sì, solito allenamento delle 18.", time: "18:00", type: "sent" },
+        { text: "Bravo, io riprendo la settimana prossima.", time: "18:10", type: "received" },
+        { text: "Dai così andiamo insieme qualche volta!", time: "18:15", type: "sent" },
+        { text: "Volentieri! Fammi sapere quando ci sei.", time: "18:20", type: "received" },
+        { text: "Ok perfetto, ci aggiorniamo stasera.", time: "18:25", type: "sent" },
+        { text: "Ci vediamo domani!", time: "18:30", type: "received" }
+      ]
+    },
+    sofia: {
+      name: "Sofia",
+      avatar: "S",
+      bg: "#8e24aa",
+      time: "17:45",
+      messages: [
+        { text: "Ehi! Vieni in biblioteca oggi?", time: "15:00", type: "received" },
+        { text: "Verso che ora?", time: "15:10", type: "sent" },
+        { text: "Noi siamo già qui al secondo piano.", time: "15:15", type: "received" },
+        { text: "Arrivo tra una mezz'ora!", time: "15:20", type: "sent" },
+        { text: "Porta anche il libro di storia se ce l'hai.", time: "15:25", type: "received" },
+        { text: "Sì ce l'ho nello zaino, no problem.", time: "15:30", type: "sent" },
+        { text: "Perfetto, ci sono anche Luca ed Elena.", time: "15:35", type: "received" },
+        { text: "C'è posto al tavolo grande?", time: "15:40", type: "sent" },
+        { text: "Sì abbiamo preso quello vicino alla finestra.", time: "15:42", type: "received" },
+        { text: "Ottimo, sto uscendo di casa ora.", time: "15:45", type: "sent" },
+        { text: "Prendi un caffè alla macchinetta prima di salire?", time: "15:50", type: "received" },
+        { text: "Sì volentieri, ne prendo uno anche per te?", time: "15:52", type: "sent" },
+        { text: "Magari! Un espresso macchiato grazie!", time: "15:55", type: "received" },
+        { text: "Arrivo tra 5 minuti con i caffè.", time: "16:00", type: "sent" },
+        { text: "Sei un angelo!", time: "16:02", type: "received" },
+        { text: "A dopo!", time: "17:45", type: "received" }
+      ]
+    },
+    alessandro: {
+      name: "Alessandro",
+      avatar: "A",
+      bg: "#d32f2f",
+      time: "16:20",
+      messages: [
+        { text: "Stasera partita?", time: "14:00", type: "received" },
+        { text: "Dove e a che ora?", time: "14:15", type: "sent" },
+        { text: "Al solito campo in sintetico, ore 20:00.", time: "14:20", type: "received" },
+        { text: "Manca ancora qualcuno?", time: "14:30", type: "sent" },
+        { text: "Siamo in 9, serve assolutamente il decimo.", time: "14:35", type: "received" },
+        { text: "Chiedo a Matteo se vuole venire.", time: "14:40", type: "sent" },
+        { text: "Grande, fammi sapere appena ti risponde!", time: "14:45", type: "received" },
+        { text: "Ha detto di sì! Viene con me in macchina.", time: "15:10", type: "sent" },
+        { text: "Spettacolo, squadra al completo!", time: "15:15", type: "received" },
+        { text: "Porti tu i fratini per fare le squadre?", time: "15:30", type: "sent" },
+        { text: "Sì li ho lavati ieri, li porto io.", time: "15:40", type: "received" },
+        { text: "Paghiamo direttamente al campo o a te?", time: "16:00", type: "sent" },
+        { text: "Sono 5 euro a testa, raccogliamo lì.", time: "16:10", type: "received" },
+        { text: "Perfetto, ci vediamo alle 19:45 nello spogliatoio.", time: "16:15", type: "sent" },
+        { text: "A dopo raga!", time: "16:20", type: "received" }
+      ]
+    },
+    elena: {
+      name: "Elena",
+      avatar: "E",
+      bg: "#f57c00",
+      time: "15:10",
+      messages: [
+        { text: "Hai poi comprato quei pennarelli?", time: "14:50", type: "received" },
+        { text: "Sì, presi stamattina in cartoleria.", time: "14:55", type: "sent" },
+        { text: "Quanto li hai pagati alla fine?", time: "15:00", type: "received" },
+        { text: "Circa 5 euro la confezione da 12.", time: "15:05", type: "sent" },
+        { text: "Buono! Domani me li fai vedere?", time: "15:08", type: "received" },
+        { text: "Certamente, li porto in classe.", time: "15:10", type: "sent" },
+        { text: "Ti servivano per il cartellone di arte?", time: "15:12", type: "sent" },
+        { text: "Sì esatto, devo finire lo sfondo.", time: "15:15", type: "received" },
+        { text: "Se vuoi ti do una mano durante l'intervallo.", time: "15:20", type: "sent" },
+        { text: "Magari! Grazie mille davvero.", time: "15:25", type: "received" },
+        { text: "Di niente! A domani allora.", time: "15:30", type: "sent" }
+      ]
+    },
+    luca: {
+      name: "Luca",
+      avatar: "L",
+      bg: "#0097a7",
+      time: "14:00",
+      messages: [
+        { text: "A che ora parte il bus?", time: "13:30", type: "received" },
+        { text: "Alle 14:15 dalla stazione centrale.", time: "13:35", type: "sent" },
+        { text: "Faccio in tempo se esco adesso di casa?", time: "13:40", type: "received" },
+        { text: "Sì vai tranquillo, fai con calma.", time: "13:45", type: "sent" },
+        { text: "Prendo la bici così faccio prima.", time: "13:50", type: "received" },
+        { text: "Hai fatto i biglietti dall'app?", time: "13:52", type: "sent" },
+        { text: "Sì ne ho presi due per sicurezza.", time: "13:55", type: "received" },
+        { text: "Ottimo, ci vediamo direttamente alla fermata allora!", time: "14:00", type: "sent" },
+        { text: "Arrivato adesso, sono sulla banchina.", time: "14:08", type: "received" },
+        { text: "Ti vedo! Sto arrivando verso di te.", time: "14:10", type: "sent" }
+      ]
+    },
+    giulia: {
+      name: "Giulia",
+      avatar: "G",
+      bg: "#c2185b",
+      time: "Ieri",
+      messages: [
+        { text: "Auguri di buon compleanno!! 🎉🎉", time: "09:00", type: "received" },
+        { text: "Grazie mille Giulia!! 😊", time: "09:15", type: "sent" },
+        { text: "Fai qualcosa di bello stasera?", time: "09:20", type: "received" },
+        { text: "Sì, una piccola pizza tranquilla in famiglia.", time: "09:30", type: "sent" },
+        { text: "Che bello! Con gli amici festeggi il weekend?", time: "09:40", type: "received" },
+        { text: "Sì, sabato sera andiamo in centro.", time: "09:45", type: "sent" },
+        { text: "Poi fammi sapere dove andate che vi raggiungo!", time: "10:00", type: "received" },
+        { text: "Certamente, ti mando la posizione sabato sera.", time: "10:15", type: "sent" },
+        { text: "Divertiti stasera intanto! Ciao!", time: "10:30", type: "received" }
+      ]
+    },
+    davide: {
+      name: "Davide",
+      avatar: "D",
+      bg: "#512da8",
+      time: "Ieri",
+      messages: [
+        { text: "Hai visto l'ultimo episodio della serie?", time: "22:00", type: "received" },
+        { text: "Nooo non spoilerare!! Devo ancora vederlo.", time: "22:05", type: "sent" },
+        { text: "Tranquillo non dico nulla, ma puntatone finale!", time: "22:10", type: "received" },
+        { text: "Stasera dopo cena lo guardo assolutamente.", time: "22:15", type: "sent" },
+        { text: "Poi dimmi subito cosa ne pensi del colpo di scena!", time: "22:20", type: "received" },
+        { text: "Mamma mia ora mi hai messo troppa curiosità.", time: "22:25", type: "sent" },
+        { text: "Preparati perché rimarrai a bocca aperta!", time: "22:30", type: "received" },
+        { text: "Ci sentiamo domani per la recensione allora!", time: "22:35", type: "sent" }
+      ]
+    },
+    chiara: {
+      name: "Chiara",
+      avatar: "C",
+      bg: "#00796b",
+      time: "05/08",
+      messages: [
+        { text: "Ti va di fare due tiri a scacchi su Chess.com?", time: "16:00", type: "received" },
+        { text: "Mandami la sfida!", time: "16:05", type: "sent" },
+        { text: "Inviata! Accetta la partita rapida a 10 min.", time: "16:10", type: "received" },
+        { text: "Entrato adesso, buona fortuna!", time: "16:12", type: "sent" },
+        { text: "Bella mossa quella del cavallo prima!", time: "16:25", type: "received" },
+        { text: "Ahah grazie, stavo preparando la trappola.", time: "16:30", type: "sent" },
+        { text: "Mi hai fregato la regina... abbandono! 😂", time: "16:40", type: "received" },
+        { text: "Rivincita quando vuoi!", time: "16:45", type: "sent" }
+      ]
+    },
+    matteo: {
+      name: "Matteo",
+      avatar: "M",
+      bg: "#455a64",
+      time: "03/08",
+      messages: [
+        { text: "Sei riuscito a risolvere quel problema di codice?", time: "11:00", type: "received" },
+        { text: "Sì, mancava un tag di chiusura div!", time: "11:15", type: "sent" },
+        { text: "Aha tipico errore di distrazione in HTML!", time: "11:20", type: "received" },
+        { text: "Eh sì, capita quando si scrive di fretta.", time: "11:25", type: "sent" },
+        { text: "Ora la pagina si vede bene anche sul telefono?", time: "11:30", type: "received" },
+        { text: "Sì perfettamente centrata e responsive.", time: "11:35", type: "sent" },
+        { text: "Ottimo lavoro! Ci sentiamo nei prossimi giorni.", time: "11:40", type: "received" }
+      ]
+    }
   };
 
   function renderContacts() {
     const list = document.getElementById("contactsView");
     list.innerHTML = "";
+    
     Object.keys(chatData).forEach(key => {
       const c = chatData[key];
+      const lastMsg = c.messages[c.messages.length - 1].text;
+      
       const div = document.createElement("div");
       div.className = "contact";
       div.onclick = () => openChat(key);
-      div.innerHTML = `<div class="avatar" style="background:${c.bg}">${c.avatar}</div><div class="contact-info"><div class="contact-top"><span class="contact-name">${c.name}</span><span class="contact-time">${c.time}</span></div><div class="contact-msg">${c.messages[c.messages.length-1].text}</div></div>`;
+      div.innerHTML = `
+        <div class="avatar" style="background:${c.bg}">${c.avatar}</div>
+        <div class="contact-info">
+          <div class="contact-top">
+            <span class="contact-name">${c.name}</span>
+            <span class="contact-time">${c.time}</span>
+          </div>
+          <div class="contact-msg">${lastMsg}</div>
+        </div>
+      `;
       list.appendChild(div);
     });
   }
 
   function openChat(key) {
     activeKey = key;
+    const c = chatData[key];
+    
     document.getElementById("contactsView").style.display = "none";
     document.getElementById("chatView").style.display = "flex";
+    
     document.getElementById("appTitle").style.display = "none";
     document.getElementById("chatTitle").style.display = "inline";
-    document.getElementById("chatTitle").innerText = chatData[key].name;
+    document.getElementById("chatTitle").innerText = c.name;
+    
     document.getElementById("backBtn").style.display = "block";
     document.getElementById("mainIcons").style.display = "none";
     document.getElementById("chatIcons").style.display = "flex";
+
     renderMessages();
   }
 
   function renderMessages() {
+    if (!activeKey) return;
     const area = document.getElementById("messagesArea");
     area.innerHTML = "";
+    
     chatData[activeKey].messages.forEach(m => {
       const div = document.createElement("div");
       div.className = `msg ${m.type}`;
       div.innerHTML = `${m.text} <div class="msg-time">${m.time}</div>`;
       area.appendChild(div);
     });
+
     area.scrollTop = area.scrollHeight;
   }
 
   function goHome() {
+    activeKey = null;
     document.getElementById("contactsView").style.display = "block";
     document.getElementById("chatView").style.display = "none";
+    
     document.getElementById("appTitle").style.display = "inline";
     document.getElementById("chatTitle").style.display = "none";
+    
     document.getElementById("backBtn").style.display = "none";
     document.getElementById("mainIcons").style.display = "flex";
     document.getElementById("chatIcons").style.display = "none";
+
+    renderContacts();
   }
 
   function sendMsg() {
     const input = document.getElementById("msgInput");
-    if (input.value.trim() !== "") {
-      chatData[activeKey].messages.push({text: input.value, time: "Ora", type: "sent"});
+    const val = input.value.trim();
+    if (val !== "" && activeKey) {
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      
+      chatData[activeKey].messages.push({
+        text: val,
+        time: timeStr,
+        type: "sent"
+      });
+
       input.value = "";
       renderMessages();
     }
   }
 
-  function handleKeyPress(e) { if (e.key === 'Enter') sendMsg(); }
+  function handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      sendMsg();
+    }
+  }
 
+  // Inizializza la lista contatti all'avvio
   renderContacts();
 </script>
 </body>
