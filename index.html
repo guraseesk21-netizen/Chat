@@ -2,8 +2,8 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WhatsApp Clone</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chat App</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
@@ -25,10 +25,9 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
-      position: relative;
     }
 
-    /* BARRA SUPERIORE */
+    /* BARRA SUPERIORE GENERALE */
     .app-header {
       background-color: #202c33;
       padding: 10px 16px;
@@ -37,6 +36,7 @@
       justify-content: space-between;
       height: 60px;
       z-index: 10;
+      border-bottom: 1px solid #111b21;
     }
 
     .header-left {
@@ -45,13 +45,20 @@
       gap: 12px;
     }
 
+    .app-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #00a884;
+      letter-spacing: 0.5px;
+    }
+
     .back-btn {
       background: none;
       border: none;
       color: #aebac1;
       font-size: 18px;
       cursor: pointer;
-      display: none; /* Nascosto nella vista contatti */
+      display: none;
     }
 
     .avatar {
@@ -64,16 +71,36 @@
       justify-content: center;
       font-weight: bold;
       color: #fff;
+      font-size: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
     }
 
     .user-info .name {
       font-weight: 600;
       font-size: 16px;
+      line-height: 1.2;
     }
 
     .user-info .status {
-      font-size: 12px;
+      font-size: 11px;
       color: #8696a0;
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #aebac1;
+      font-size: 18px;
+    }
+
+    .header-actions i {
+      cursor: pointer;
     }
 
     /* VISTA LISTA CONTATTI */
@@ -109,6 +136,7 @@
     .contact-name {
       font-weight: 600;
       color: #e9edef;
+      font-size: 16px;
     }
 
     .contact-time {
@@ -128,7 +156,7 @@
     /* VISTA CHAT */
     .chat-view {
       flex: 1;
-      display: none; /* Nascosta di default */
+      display: none;
       flex-direction: column;
       background-color: #0b141a;
       background-image: radial-gradient(#202c33 1px, transparent 0);
@@ -145,12 +173,13 @@
     }
 
     .msg {
-      max-width: 75%;
+      max-width: 80%;
       padding: 8px 12px;
       border-radius: 8px;
       font-size: 15px;
       line-height: 1.4;
       position: relative;
+      word-wrap: break-word;
     }
 
     .msg.received {
@@ -171,27 +200,80 @@
       text-align: right;
       margin-top: 4px;
     }
+
+    /* BARRA INPUT MESSAGGI */
+    .chat-input-bar {
+      background-color: #202c33;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-input-bar input {
+      flex: 1;
+      background-color: #2a3942;
+      border: none;
+      outline: none;
+      color: #e9edef;
+      padding: 10px 14px;
+      border-radius: 20px;
+      font-size: 15px;
+    }
+
+    .chat-input-bar button {
+      background-color: #00a884;
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .chat-input-bar .icon-btn {
+      color: #8696a0;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0 4px;
+    }
   </style>
 </head>
 <body>
 
   <div class="app-container">
-    <!-- Header -->
+    <!-- Header dinamico -->
     <div class="app-header">
       <div class="header-left">
         <button class="back-btn" id="backBtn" onclick="showContacts()"><i class="fa-solid fa-arrow-left"></i></button>
-        <div class="avatar" id="headerAvatar">WA</div>
-        <div class="user-info">
-          <div class="name" id="headerTitle">WhatsApp</div>
+        <span class="app-title" id="appTitle">Chat</span>
+        <div class="avatar" id="headerAvatar" style="display: none;"></div>
+        <div class="user-info" id="userInfo" style="display: none;">
+          <div class="name" id="headerTitle"></div>
           <div class="status" id="headerStatus"></div>
         </div>
+      </div>
+
+      <!-- Icone destra (cambiano tra lista e chat) -->
+      <div class="header-actions" id="mainActions">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+      <div class="header-actions" id="chatActions" style="display: none;">
+        <i class="fa-solid fa-video"></i>
+        <i class="fa-solid fa-phone"></i>
+        <i class="fa-solid fa-ellipsis-vertical"></i>
       </div>
     </div>
 
     <!-- Lista Contatti -->
     <div class="contacts-view" id="contactsView">
       <div class="contact-item" onclick="openChat('koharu')">
-        <div class="avatar">KF</div>
+        <div class="avatar" style="background-color: #3b5998;">KF</div>
         <div class="contact-details">
           <div class="contact-top">
             <span class="contact-name">Koharu Fuyutsuki</span>
@@ -202,13 +284,24 @@
       </div>
 
       <div class="contact-item" onclick="openChat('marco')">
-        <div class="avatar">M</div>
+        <div class="avatar" style="background-color: #2e7d32;">M</div>
         <div class="contact-details">
           <div class="contact-top">
             <span class="contact-name">Marco</span>
             <span class="contact-time">18:30</span>
           </div>
-          <div class="contact-last-msg">Ci vediamo più tardi!</div>
+          <div class="contact-last-msg">Ci vediamo domani a scuola!</div>
+        </div>
+      </div>
+
+      <div class="contact-item" onclick="openChat('sofia')">
+        <div class="avatar" style="background-color: #8e24aa;">S</div>
+        <div class="contact-details">
+          <div class="contact-top">
+            <span class="contact-name">Sofia</span>
+            <span class="contact-time">15:45</span>
+          </div>
+          <div class="contact-last-msg">Hai gli appunti di oggi?</div>
         </div>
       </div>
     </div>
@@ -216,16 +309,29 @@
     <!-- Schermata Chat -->
     <div class="chat-view" id="chatView">
       <div class="chat-messages" id="chatMessages"></div>
+
+      <!-- Input Bar -->
+      <div class="chat-input-bar">
+        <i class="fa-regular fa-face-smile icon-btn"></i>
+        <input type="text" id="messageInput" placeholder="Scrivi un messaggio..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
     </div>
   </div>
 
   <script>
+    let activeContact = null;
+
     const chatData = {
       koharu: {
         name: "Koharu Fuyutsuki",
         avatar: "KF",
+        bg: "#3b5998",
         status: "online",
         messages: [
+          { text: "Ciao! Come sta andando il progetto?", time: "20:30", type: "received" },
+          { text: "Sto configurando la chat proprio adesso", time: "20:35", type: "sent" },
+          { text: "Perfetto! Fammi sapere appena è online.", time: "20:40", type: "received" },
           { text: "Grazie per oggi!", time: "20:45", type: "received" },
           { text: "Di cosa parli?", time: "21:00", type: "sent" },
           { text: "Sì, esatto", time: "21:12", type: "received" }
@@ -234,25 +340,56 @@
       marco: {
         name: "Marco",
         avatar: "M",
+        bg: "#2e7d32",
         status: "ultimo accesso oggi alle 18:35",
         messages: [
-          { text: "Ciao, hai finito il progetto?", time: "18:25", type: "received" },
-          { text: "Sì, ho appena caricato i file!", time: "18:28", type: "sent" },
-          { text: "Ci vediamo più tardi!", time: "18:30", type: "received" }
+          { text: "Ciao, hai finito gli esercizi di matematica?", time: "17:10", type: "received" },
+          { text: "Quasi tutti, me ne mancano due", time: "17:15", type: "sent" },
+          { text: "Se vuoi ti passo i miei più tardi", time: "18:25", type: "received" },
+          { text: "Grazie mille, mi faresti un gran favore!", time: "18:28", type: "sent" },
+          { text: "Ci vediamo domani a scuola!", time: "18:30", type: "received" }
+        ]
+      },
+      sofia: {
+        name: "Sofia",
+        avatar: "S",
+        bg: "#8e24aa",
+        status: "online",
+        messages: [
+          { text: "Ehi! Ci sei per lo studio di gruppo?", time: "15:20", type: "received" },
+          { text: "Sì, tra poco mi collego!", time: "15:30", type: "sent" },
+          { text: "Hai gli appunti di oggi?", time: "15:45", type: "received" }
         ]
       }
     };
 
     function openChat(contactKey) {
+      activeContact = contactKey;
       const contact = chatData[contactKey];
       
       // Aggiorna Header
-      document.getElementById("headerTitle").innerText = contact.name;
+      document.getElementById("appTitle").style.display = "none";
+      document.getElementById("headerAvatar").style.display = "flex";
       document.getElementById("headerAvatar").innerText = contact.avatar;
+      document.getElementById("headerAvatar").style.backgroundColor = contact.bg;
+      document.getElementById("userInfo").style.display = "flex";
+      document.getElementById("headerTitle").innerText = contact.name;
       document.getElementById("headerStatus").innerText = contact.status;
       document.getElementById("backBtn").style.display = "block";
 
-      // Mostra i messaggi
+      document.getElementById("mainActions").style.display = "none";
+      document.getElementById("chatActions").style.display = "flex";
+
+      renderMessages();
+
+      // Passa alla vista Chat
+      document.getElementById("contactsView").style.display = "none";
+      document.getElementById("chatView").style.display = "flex";
+    }
+
+    function renderMessages() {
+      if (!activeContact) return;
+      const contact = chatData[activeContact];
       const messagesContainer = document.getElementById("chatMessages");
       messagesContainer.innerHTML = "";
       
@@ -263,17 +400,43 @@
         messagesContainer.appendChild(div);
       });
 
-      // Passa alla vista Chat
-      document.getElementById("contactsView").style.display = "none";
-      document.getElementById("chatView").style.display = "flex";
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function sendMessage() {
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+      if (!text || !activeContact) return;
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      chatData[activeContact].messages.push({
+        text: text,
+        time: timeStr,
+        type: "sent"
+      });
+
+      input.value = "";
+      renderMessages();
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
     }
 
     function showContacts() {
+      activeContact = null;
       // Ripristina Header Principale
-      document.getElementById("headerTitle").innerText = "WhatsApp";
-      document.getElementById("headerAvatar").innerText = "WA";
-      document.getElementById("headerStatus").innerText = "";
+      document.getElementById("appTitle").style.display = "inline";
+      document.getElementById("headerAvatar").style.display = "none";
+      document.getElementById("userInfo").style.display = "none";
       document.getElementById("backBtn").style.display = "none";
+
+      document.getElementById("mainActions").style.display = "flex";
+      document.getElementById("chatActions").style.display = "none";
 
       // Passa alla vista Contatti
       document.getElementById("chatView").style.display = "none";
@@ -282,3 +445,4 @@
   </script>
 </body>
 </html>
+
