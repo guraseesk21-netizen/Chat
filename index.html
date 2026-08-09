@@ -2,447 +2,120 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat App</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body, html { height: 100%; background-color: #0b141a; color: #e9edef; overflow: hidden; }
+    .app-container { width: 100%; height: 100vh; display: flex; flex-direction: column; }
 
-    body, html {
-      height: 100%;
-      background-color: #0b141a;
-      color: #e9edef;
-      overflow: hidden;
-    }
-
-    .app-container {
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* BARRA SUPERIORE GENERALE */
-    .app-header {
-      background-color: #202c33;
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 60px;
-      z-index: 10;
-      border-bottom: 1px solid #111b21;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .app-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: #00a884;
-      letter-spacing: 0.5px;
-    }
-
-    .back-btn {
-      background: none;
-      border: none;
-      color: #aebac1;
-      font-size: 18px;
-      cursor: pointer;
-      display: none;
-    }
-
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #6b7c85;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #fff;
-      font-size: 15px;
-    }
-
-    .user-info {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .user-info .name {
-      font-weight: 600;
-      font-size: 16px;
-      line-height: 1.2;
-    }
-
-    .user-info .status {
-      font-size: 11px;
-      color: #8696a0;
-      margin-top: 2px;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      color: #aebac1;
-      font-size: 18px;
-    }
-
-    .header-actions i {
-      cursor: pointer;
-    }
-
-    /* VISTA LISTA CONTATTI */
-    .contacts-view {
-      flex: 1;
-      overflow-y: auto;
-      background-color: #111b21;
-    }
-
-    .contact-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 16px;
-      gap: 15px;
-      border-bottom: 1px solid #222d34;
-      cursor: pointer;
-    }
-
-    .contact-item:active {
-      background-color: #202c33;
-    }
-
-    .contact-details {
-      flex: 1;
-    }
-
-    .contact-top {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-    }
-
-    .contact-name {
-      font-weight: 600;
-      color: #e9edef;
-      font-size: 16px;
-    }
-
-    .contact-time {
-      font-size: 12px;
-      color: #8696a0;
-    }
-
-    .contact-last-msg {
-      font-size: 14px;
-      color: #8696a0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 250px;
-    }
+    /* HEADER */
+    .header-bar { background-color: #202c33; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
+    .header-left { display: flex; align-items: center; gap: 15px; }
+    .app-title { font-size: 20px; font-weight: bold; color: #00a884; }
+    .header-icons { display: flex; gap: 20px; color: #aebac1; font-size: 18px; }
+    
+    /* VISTA CONTATTI */
+    .contacts-list { flex: 1; overflow-y: auto; background-color: #111b21; }
+    .contact { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #222d34; cursor: pointer; }
+    .avatar { width: 45px; height: 45px; border-radius: 50%; background-color: #6b7c85; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; }
+    .contact-info { flex: 1; }
+    .contact-name { font-weight: bold; }
+    .contact-msg { font-size: 13px; color: #8696a0; margin-top: 2px; }
 
     /* VISTA CHAT */
-    .chat-view {
-      flex: 1;
-      display: none;
-      flex-direction: column;
-      background-color: #0b141a;
-      background-image: radial-gradient(#202c33 1px, transparent 0);
-      background-size: 20px 20px;
-    }
-
-    .chat-messages {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .msg {
-      max-width: 80%;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 15px;
-      line-height: 1.4;
-      position: relative;
-      word-wrap: break-word;
-    }
-
-    .msg.received {
-      background-color: #202c33;
-      align-self: flex-start;
-      border-top-left-radius: 0;
-    }
-
-    .msg.sent {
-      background-color: #005c4b;
-      align-self: flex-end;
-      border-top-right-radius: 0;
-    }
-
-    .msg-time {
-      font-size: 10px;
-      color: #8696a0;
-      text-align: right;
-      margin-top: 4px;
-    }
-
-    /* BARRA INPUT MESSAGGI */
-    .chat-input-bar {
-      background-color: #202c33;
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .chat-input-bar input {
-      flex: 1;
-      background-color: #2a3942;
-      border: none;
-      outline: none;
-      color: #e9edef;
-      padding: 10px 14px;
-      border-radius: 20px;
-      font-size: 15px;
-    }
-
-    .chat-input-bar button {
-      background-color: #00a884;
-      border: none;
-      color: white;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    .chat-input-bar .icon-btn {
-      color: #8696a0;
-      font-size: 20px;
-      cursor: pointer;
-      padding: 0 4px;
-    }
+    .chat-container { flex: 1; display: none; flex-direction: column; background-color: #0b141a; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+    .msg { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 14px; }
+    .msg.sent { background-color: #005c4b; align-self: flex-end; }
+    .msg.received { background-color: #202c33; align-self: flex-start; }
+    
+    /* INPUT BAR */
+    .input-bar { background-color: #202c33; padding: 10px; display: flex; align-items: center; gap: 10px; }
+    .input-bar input { flex: 1; background: #2a3942; border: none; padding: 10px; border-radius: 20px; color: white; outline: none; }
+    .send-btn { color: #00a884; font-size: 20px; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <!-- Header dinamico -->
-    <div class="app-header">
-      <div class="header-left">
-        <button class="back-btn" id="backBtn" onclick="showContacts()"><i class="fa-solid fa-arrow-left"></i></button>
-        <span class="app-title" id="appTitle">Chat</span>
-        <div class="avatar" id="headerAvatar" style="display: none;"></div>
-        <div class="user-info" id="userInfo" style="display: none;">
-          <div class="name" id="headerTitle"></div>
-          <div class="status" id="headerStatus"></div>
-        </div>
-      </div>
+<div class="app-container">
+  <!-- Header App -->
+  <div class="header-bar" id="appHeader">
+    <div class="header-left">
+      <i class="fa-solid fa-arrow-left" id="backBtn" style="display:none;" onclick="goHome()"></i>
+      <span class="app-title" id="headerTitle">Chat App</span>
+    </div>
+    <div class="header-icons" id="mainIcons">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <i class="fa-solid fa-ellipsis-vertical"></i>
+    </div>
+    <div class="header-icons" id="chatIcons" style="display:none;">
+      <i class="fa-solid fa-video"></i>
+      <i class="fa-solid fa-phone"></i>
+      <i class="fa-solid fa-ellipsis-vertical"></i>
+    </div>
+  </div>
 
-      <!-- Icone destra (cambiano tra lista e chat) -->
-      <div class="header-actions" id="mainActions">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <i class="fa-solid fa-ellipsis-vertical"></i>
-      </div>
-      <div class="header-actions" id="chatActions" style="display: none;">
-        <i class="fa-solid fa-video"></i>
-        <i class="fa-solid fa-phone"></i>
-        <i class="fa-solid fa-ellipsis-vertical"></i>
+  <!-- Lista Contatti -->
+  <div class="contacts-list" id="contactsView">
+    <div class="contact" onclick="openChat('Koharu Fuyutsuki', 'KF', '#3b5998')">
+      <div class="avatar" style="background:#3b5998">KF</div>
+      <div class="contact-info">
+        <div class="contact-name">Koharu Fuyutsuki</div>
+        <div class="contact-msg">Sì, esatto.</div>
       </div>
     </div>
-
-    <!-- Lista Contatti -->
-    <div class="contacts-view" id="contactsView">
-      <div class="contact-item" onclick="openChat('koharu')">
-        <div class="avatar" style="background-color: #3b5998;">KF</div>
-        <div class="contact-details">
-          <div class="contact-top">
-            <span class="contact-name">Koharu Fuyutsuki</span>
-            <span class="contact-time">21:12</span>
-          </div>
-          <div class="contact-last-msg">Sì, esatto</div>
-        </div>
-      </div>
-
-      <div class="contact-item" onclick="openChat('marco')">
-        <div class="avatar" style="background-color: #2e7d32;">M</div>
-        <div class="contact-details">
-          <div class="contact-top">
-            <span class="contact-name">Marco</span>
-            <span class="contact-time">18:30</span>
-          </div>
-          <div class="contact-last-msg">Ci vediamo domani a scuola!</div>
-        </div>
-      </div>
-
-      <div class="contact-item" onclick="openChat('sofia')">
-        <div class="avatar" style="background-color: #8e24aa;">S</div>
-        <div class="contact-details">
-          <div class="contact-top">
-            <span class="contact-name">Sofia</span>
-            <span class="contact-time">15:45</span>
-          </div>
-          <div class="contact-last-msg">Hai gli appunti di oggi?</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Schermata Chat -->
-    <div class="chat-view" id="chatView">
-      <div class="chat-messages" id="chatMessages"></div>
-
-      <!-- Input Bar -->
-      <div class="chat-input-bar">
-        <i class="fa-regular fa-face-smile icon-btn"></i>
-        <input type="text" id="messageInput" placeholder="Scrivi un messaggio..." onkeypress="handleKeyPress(event)">
-        <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+    <div class="contact" onclick="openChat('Marco', 'M', '#2e7d32')">
+      <div class="avatar" style="background:#2e7d32">M</div>
+      <div class="contact-info">
+        <div class="contact-name">Marco</div>
+        <div class="contact-msg">Ci vediamo domani!</div>
       </div>
     </div>
   </div>
 
-  <script>
-    let activeContact = null;
+  <!-- Finestra Chat -->
+  <div class="chat-container" id="chatView">
+    <div class="chat-messages" id="messagesArea"></div>
+    <div class="input-bar">
+      <i class="fa-regular fa-face-smile" style="color:#8696a0; font-size:20px;"></i>
+      <input type="text" id="msgInput" placeholder="Messaggio">
+      <i class="fa-solid fa-paper-plane send-btn" onclick="sendMsg()"></i>
+    </div>
+  </div>
+</div>
 
-    const chatData = {
-      koharu: {
-        name: "Koharu Fuyutsuki",
-        avatar: "KF",
-        bg: "#3b5998",
-        status: "online",
-        messages: [
-          { text: "Ciao! Come sta andando il progetto?", time: "20:30", type: "received" },
-          { text: "Sto configurando la chat proprio adesso", time: "20:35", type: "sent" },
-          { text: "Perfetto! Fammi sapere appena è online.", time: "20:40", type: "received" },
-          { text: "Grazie per oggi!", time: "20:45", type: "received" },
-          { text: "Di cosa parli?", time: "21:00", type: "sent" },
-          { text: "Sì, esatto", time: "21:12", type: "received" }
-        ]
-      },
-      marco: {
-        name: "Marco",
-        avatar: "M",
-        bg: "#2e7d32",
-        status: "ultimo accesso oggi alle 18:35",
-        messages: [
-          { text: "Ciao, hai finito gli esercizi di matematica?", time: "17:10", type: "received" },
-          { text: "Quasi tutti, me ne mancano due", time: "17:15", type: "sent" },
-          { text: "Se vuoi ti passo i miei più tardi", time: "18:25", type: "received" },
-          { text: "Grazie mille, mi faresti un gran favore!", time: "18:28", type: "sent" },
-          { text: "Ci vediamo domani a scuola!", time: "18:30", type: "received" }
-        ]
-      },
-      sofia: {
-        name: "Sofia",
-        avatar: "S",
-        bg: "#8e24aa",
-        status: "online",
-        messages: [
-          { text: "Ehi! Ci sei per lo studio di gruppo?", time: "15:20", type: "received" },
-          { text: "Sì, tra poco mi collego!", time: "15:30", type: "sent" },
-          { text: "Hai gli appunti di oggi?", time: "15:45", type: "received" }
-        ]
-      }
-    };
+<script>
+  function openChat(name, avatar, color) {
+    document.getElementById('contactsView').style.display = 'none';
+    document.getElementById('chatView').style.display = 'flex';
+    document.getElementById('headerTitle').innerText = name;
+    document.getElementById('backBtn').style.display = 'block';
+    document.getElementById('mainIcons').style.display = 'none';
+    document.getElementById('chatIcons').style.display = 'flex';
+    document.getElementById('messagesArea').innerHTML = '<div class="msg received">Ciao! Benvenuto nella chat con ' + name + '</div>';
+  }
 
-    function openChat(contactKey) {
-      activeContact = contactKey;
-      const contact = chatData[contactKey];
-      
-      // Aggiorna Header
-      document.getElementById("appTitle").style.display = "none";
-      document.getElementById("headerAvatar").style.display = "flex";
-      document.getElementById("headerAvatar").innerText = contact.avatar;
-      document.getElementById("headerAvatar").style.backgroundColor = contact.bg;
-      document.getElementById("userInfo").style.display = "flex";
-      document.getElementById("headerTitle").innerText = contact.name;
-      document.getElementById("headerStatus").innerText = contact.status;
-      document.getElementById("backBtn").style.display = "block";
+  function goHome() {
+    document.getElementById('contactsView').style.display = 'block';
+    document.getElementById('chatView').style.display = 'none';
+    document.getElementById('headerTitle').innerText = 'Chat App';
+    document.getElementById('backBtn').style.display = 'none';
+    document.getElementById('mainIcons').style.display = 'flex';
+    document.getElementById('chatIcons').style.display = 'none';
+  }
 
-      document.getElementById("mainActions").style.display = "none";
-      document.getElementById("chatActions").style.display = "flex";
-
-      renderMessages();
-
-      // Passa alla vista Chat
-      document.getElementById("contactsView").style.display = "none";
-      document.getElementById("chatView").style.display = "flex";
-    }
-
-    function renderMessages() {
-      if (!activeContact) return;
-      const contact = chatData[activeContact];
-      const messagesContainer = document.getElementById("chatMessages");
-      messagesContainer.innerHTML = "";
-      
-      contact.messages.forEach(msg => {
-        const div = document.createElement("div");
-        div.className = `msg ${msg.type}`;
-        div.innerHTML = `${msg.text} <div class="msg-time">${msg.time}</div>`;
-        messagesContainer.appendChild(div);
-      });
-
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-
-    function sendMessage() {
-      const input = document.getElementById("messageInput");
-      const text = input.value.trim();
-      if (!text || !activeContact) return;
-
-      const now = new Date();
-      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-      chatData[activeContact].messages.push({
-        text: text,
-        time: timeStr,
-        type: "sent"
-      });
-
+  function sendMsg() {
+    let input = document.getElementById('msgInput');
+    if(input.value.trim() !== "") {
+      let msg = document.createElement('div');
+      msg.className = 'msg sent';
+      msg.innerText = input.value;
+      document.getElementById('messagesArea').appendChild(msg);
       input.value = "";
-      renderMessages();
     }
-
-    function handleKeyPress(e) {
-      if (e.key === 'Enter') {
-        sendMessage();
-      }
-    }
-
-    function showContacts() {
-      activeContact = null;
-      // Ripristina Header Principale
-      document.getElementById("appTitle").style.display = "inline";
-      document.getElementById("headerAvatar").style.display = "none";
-      document.getElementById("userInfo").style.display = "none";
-      document.getElementById("backBtn").style.display = "none";
-
-      document.getElementById("mainActions").style.display = "flex";
-      document.getElementById("chatActions").style.display = "none";
-
-      // Passa alla vista Contatti
-      document.getElementById("chatView").style.display = "none";
-      document.getElementById("contactsView").style.display = "block";
-    }
-  </script>
+  }
+</script>
 </body>
 </html>
-
