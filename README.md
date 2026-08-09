@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
@@ -14,24 +14,23 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    body {
-      background-color: #799ba9; /* Colore di sfondo della chat */
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #8daebb;
+      overflow-x: hidden;
     }
 
     .chat-container {
       width: 100%;
-      max-width: 480px;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      height: 100vh;
       background-color: #8daebb;
       position: relative;
     }
 
-    /* Intestazione */
+    /* Intestazione Chat */
     .chat-header {
       background-color: #2b3a42;
       color: white;
@@ -47,7 +46,7 @@
     .user-info {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .avatar {
@@ -74,10 +73,10 @@
 
     /* Bubble dei messaggi */
     .message {
-      max-width: 75%;
+      max-width: 80%;
       padding: 10px 14px;
       border-radius: 15px;
-      font-size: 14px;
+      font-size: 15px;
       line-height: 1.4;
       position: relative;
       opacity: 0;
@@ -101,7 +100,7 @@
 
     .message.sent {
       align-self: flex-end;
-      background-color: #f7e665; /* Giallo stile LINE */
+      background-color: #f7e665;
       color: #000;
       border-bottom-right-radius: 2px;
     }
@@ -113,7 +112,7 @@
       text-align: right;
     }
 
-    /* Player Audio nei Messaggi */
+    /* Player Audio */
     .audio-player {
       display: flex;
       align-items: center;
@@ -124,8 +123,8 @@
       background-color: #000;
       color: #fff;
       border: none;
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
@@ -189,10 +188,10 @@
       <div class="user-info">
         <i class="fa-solid fa-chevron-left"></i>
         <div class="avatar">KF</div>
-        <span>Koharu Fuyutsuki</span>
+        <span style="font-weight: bold;">Koharu Fuyutsuki</span>
       </div>
       <div>
-        <i class="fa-solid fa-magnifying-glass" style="margin-right: 10px;"></i>
+        <i class="fa-solid fa-magnifying-glass" style="margin-right: 15px;"></i>
         <i class="fa-solid fa-phone"></i>
       </div>
     </div>
@@ -200,7 +199,7 @@
     <!-- Contenitore Messaggi -->
     <div class="chat-messages" id="chatBox"></div>
 
-    <!-- Banner Finale (Appare alla fine della sequenza) -->
+    <!-- Banner Finale -->
     <div class="final-banner" id="finalBanner">
       <div class="social-icons">
         <a href="#" class="social-btn"><i class="fa-brands fa-x-twitter"></i></a>
@@ -215,13 +214,11 @@
   </div>
 
   <script>
-    // 1. CONFIGURA I TUOI MESSAGGI E I TEMPI (in millisecondi)
     const messagesData = [
       { type: 'text', sender: 'received', text: 'Grazie per oggi!', time: '20:45', delay: 1000 },
       { type: 'text', sender: 'sent', text: 'Di cosa parli?', time: '21:00', delay: 2500 },
       { type: 'text', sender: 'received', text: 'Sì, esatto', time: '21:12', delay: 4000 },
       { type: 'text', sender: 'sent', text: 'Come si fa?', time: '21:13', delay: 5500 },
-      // Messaggio vocale con link file MP3 di test
       { 
         type: 'audio', 
         sender: 'sent', 
@@ -243,7 +240,6 @@
     const chatBox = document.getElementById('chatBox');
     const finalBanner = document.getElementById('finalBanner');
 
-    // Funzione per creare i messaggi a schermo
     function addMessage(msg) {
       const msgDiv = document.createElement('div');
       msgDiv.classList.add('message', msg.sender);
@@ -266,10 +262,9 @@
       }
 
       chatBox.appendChild(msgDiv);
-      chatBox.scrollTop = chatBox.scrollHeight; // Scroll automatico verso il basso
+      window.scrollTo(0, document.body.scrollHeight);
     }
 
-    // Gestione della riproduzione Audio
     let currentAudio = null;
     let currentBtn = null;
 
@@ -293,16 +288,14 @@
       };
     }
 
-    // Sequenza temporizzata dei messaggi
     messagesData.forEach((msg, index) => {
       setTimeout(() => {
         addMessage(msg);
         
-        // Se è l'ultimo messaggio, mostra il banner finale
         if (index === messagesData.length - 1) {
           setTimeout(() => {
             finalBanner.style.display = 'flex';
-            chatBox.scrollTop = chatBox.scrollHeight;
+            window.scrollTo(0, document.body.scrollHeight);
           }, 1500);
         }
       }, msg.delay);
@@ -310,3 +303,4 @@
   </script>
 </body>
 </html>
+
